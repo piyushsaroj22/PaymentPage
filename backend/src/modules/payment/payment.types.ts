@@ -11,7 +11,7 @@ export interface VerifyPaymentBody {
 export interface RazorpayWebhookPaymentEntity {
   id: string;
   order_id: string;
-  status: string;
+  status: "captured" | "failed";
 }
 
 export interface RazorpayWebhookPayload {
