@@ -3,7 +3,6 @@ type ButtonCardProps = {
   count: number;
   buttonText: string;
   buttonColor: string;
-
   onClick: () => void;
 };
 
@@ -15,16 +14,17 @@ const ButtonCard = ({
   onClick,
 }: ButtonCardProps) => {
   return (
-    <div className="flex flex-col items-center rounded-xl border p-8 shadow">
-      <h2 className="mb-6 text-2xl font-bold">{title}</h2>
+    <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition hover:shadow-lg">
+      <h2 className="text-center text-2xl font-bold">{title}</h2>
 
-      <p className="text-6xl font-bold">{count}</p>
-
-      <p className="mb-8 mt-2 text-gray-500">Total Clicks</p>
+      <div className="mt-8 text-center">
+        <p className="text-6xl font-extrabold">{count}</p>
+        <p className="mt-2 text-gray-500">Total Clicks</p>
+      </div>
 
       <button
         onClick={onClick}
-        className={`w-full rounded-lg ${buttonColor} py-3 text-lg font-semibold text-white`}
+        className={`mt-8 w-full rounded-xl py-3 text-lg font-semibold text-white transition ${buttonColor}`}
       >
         {buttonText}
       </button>
