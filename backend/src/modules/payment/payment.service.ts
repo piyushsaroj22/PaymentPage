@@ -50,20 +50,29 @@ export const createOrder = async (amount: CreateOrderBody["amount"]) => {
 const markPaymentAsSuccess = async (
   razorpayOrderId: string,
   razorpayPaymentId: string,
-  razorpaySignature: string,
   session: Awaited<ReturnType<typeof PaymentModel.startSession>>,
+  razorpaySignature?: string,
 ): Promise<VerifyPaymentResponse> => {
+  const update: {
+    status: PaymentStatus;
+    razorpayPaymentId: string;
+    razorpaySignature?: string;
+  } = {
+    status: PaymentStatus.SUCCESS,
+    razorpayPaymentId,
+  };
+
+  if (razorpaySignature) {
+    update.razorpaySignature = razorpaySignature;
+  }
+
   const payment = await PaymentModel.findOneAndUpdate(
     {
       razorpayOrderId,
       status: PaymentStatus.CREATED,
     },
     {
-      $set: {
-        status: PaymentStatus.SUCCESS,
-        razorpayPaymentId,
-        razorpaySignature,
-      },
+      $set: update,
     },
     {
       new: true,
@@ -71,7 +80,6 @@ const markPaymentAsSuccess = async (
     },
   );
 
-  // Already processed
   if (!payment) {
     const existing = await PaymentModel.findOne({
       razorpayOrderId,
@@ -81,22 +89,18 @@ const markPaymentAsSuccess = async (
       throw new Error("Payment order not found.");
     }
 
-    if (existing.status === PaymentStatus.SUCCESS) {
-      const click = await ClickModel.findOne().session(session);
+    const click = await ClickModel.findOne().session(session);
 
-      if (!click) {
-        throw new Error("Click document not found.");
-      }
-
-      return {
-        success: true,
-        message: "Payment already processed.",
-        freeClicks: click.freeClicks,
-        paidClicks: click.paidClicks,
-      };
+    if (!click) {
+      throw new Error("Click document not found.");
     }
 
-    throw new Error("Payment has already failed.");
+    return {
+      success: true,
+      message: "Payment already processed.",
+      freeClicks: click.freeClicks,
+      paidClicks: click.paidClicks,
+    };
   }
 
   const click = await ClickModel.findOne().session(session);
@@ -151,12 +155,17 @@ export const verifyPaymentService = async (
     throw new Error("Missing payment details.");
   }
 
-  const generatedSignature = crypto
+  const generated = crypto
     .createHmac("sha256", env.RAZORPAY_KEY_SECRET)
     .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-    .digest("hex");
+    .digest();
 
-  if (generatedSignature !== razorpay_signature) {
+  const received = Buffer.from(razorpay_signature, "hex");
+
+  if (
+    generated.length !== received.length ||
+    !crypto.timingSafeEqual(generated, received)
+  ) {
     throw new Error("Invalid payment signature.");
   }
 
@@ -165,11 +174,19 @@ export const verifyPaymentService = async (
   try {
     session.startTransaction();
 
+    const existingPayment = await PaymentModel.findOne({
+      razorpayPaymentId: razorpay_payment_id,
+    }).session(session);
+
+    if (existingPayment) {
+      throw new Error("Duplicate payment detected.");
+    }
+
     const result = await markPaymentAsSuccess(
       razorpay_order_id,
       razorpay_payment_id,
-      razorpay_signature,
       session,
+      razorpay_signature,
     );
 
     await session.commitTransaction();
@@ -193,7 +210,7 @@ export const handleWebhook = async (payload: RazorpayWebhookPayload) => {
 
     switch (payload.event) {
       case RAZORPAY_CAPTURE_EVENT: {
-        await markPaymentAsSuccess(payment.order_id, payment.id, "", session);
+        await markPaymentAsSuccess(payment.order_id, payment.id, session);
         break;
       }
       case RAZORPAY_FAILED_EVENT: {
@@ -201,7 +218,12 @@ export const handleWebhook = async (payload: RazorpayWebhookPayload) => {
         break;
       }
       default:
-        break;
+        await session.commitTransaction();
+
+        return {
+          success: true,
+          message: "Webhook event ignored.",
+        };
     }
 
     await session.commitTransaction();
@@ -216,4 +238,8 @@ export const handleWebhook = async (payload: RazorpayWebhookPayload) => {
   } finally {
     session.endSession();
   }
+};
+
+export const getPaymentHistory = async () => {
+  return PaymentModel.find().sort({ createdAt: -1 }).lean();
 };

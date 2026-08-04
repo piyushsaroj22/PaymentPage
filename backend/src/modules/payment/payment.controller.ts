@@ -9,10 +9,46 @@ import type {
 
 import {
   createOrder,
-  //   getPaymentHistory,
+  getPaymentHistory,
   handleWebhook,
   verifyPaymentService,
 } from "./payment.service.js";
+
+export const createPaymentOrder = async (req: Request, res: Response) => {
+  try {
+    const { amount } = req.body;
+
+    const order = await createOrder(Number(amount));
+
+    return res.status(201).json({
+      success: true,
+      data: order,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error instanceof Error ? error.message : "Something went wrong.",
+    });
+  }
+};
+
+export const verifyPayment = async (
+  req: Request<{}, {}, VerifyPaymentBody>,
+  res: Response,
+) => {
+  try {
+    const result = await verifyPaymentService(req.body);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(400).json({
+      success: false,
+      message: error instanceof Error ? error.message : "Something went wrong.",
+    });
+  }
+};
 
 export const paymentWebhook = async (req: Request, res: Response) => {
   try {
@@ -30,11 +66,12 @@ export const paymentWebhook = async (req: Request, res: Response) => {
       .update(req.body)
       .digest("hex");
 
+    const received = Buffer.from(signature, "hex");
+    const expected = Buffer.from(expectedSignature, "hex");
+
     if (
-      !crypto.timingSafeEqual(
-        Buffer.from(signature),
-        Buffer.from(expectedSignature),
-      )
+      received.length !== expected.length ||
+      !crypto.timingSafeEqual(received, expected)
     ) {
       return res.status(401).json({
         success: false,
@@ -48,6 +85,24 @@ export const paymentWebhook = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error instanceof Error ? error.message : "Something went wrong.",
+    });
+  }
+};
+
+export const getPayments = async (_req: Request, res: Response) => {
+  try {
+    const payments = await getPaymentHistory();
+
+    return res.status(200).json({
+      success: true,
+      data: payments,
     });
   } catch (error) {
     console.error(error);
