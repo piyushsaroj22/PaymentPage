@@ -1,6 +1,7 @@
 import razorpay from "./razorpay.js";
 import PaymentModel from "./payment.model.js";
 import { PaymentStatus } from "./payment.constants.js";
+import type { VerifyPaymentBody } from "./payment.types.js";
 
 export const createOrder = async (amount: number) => {
   if (Number.isNaN(amount)) {
@@ -23,4 +24,10 @@ export const createOrder = async (amount: number) => {
   });
 
   return order;
+};
+
+export const verifyPaymentService = async (_body: VerifyPaymentBody) => {
+  return {
+    message: "Verify payment service is under development.",
+  };
 };
