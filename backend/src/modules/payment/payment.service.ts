@@ -6,6 +6,43 @@ import env from "../../config/env.js";
 import razorpay from "./razorpay.js";
 import crypto from "crypto";
 
+const completeSuccessfulPayment = async (
+  payment: InstanceType<typeof PaymentModel>,
+  razorpayPaymentId: string,
+  razorpaySignature: string,
+  session: Awaited<ReturnType<typeof PaymentModel.startSession>>,
+) => {
+  payment.status = PaymentStatus.SUCCESS;
+  payment.razorpayPaymentId = razorpayPaymentId;
+  payment.razorpaySignature = razorpaySignature;
+
+  await payment.save({ session });
+
+  const click = await ClickModel.findOne().session(session);
+
+  if (!click) {
+    throw new Error("Click document not found.");
+  }
+
+  click.paidClicks += 1;
+
+  await click.save({ session });
+
+  return {
+    freeClicks: click.freeClicks,
+    paidClicks: click.paidClicks,
+  };
+};
+
+const processFailedPayment = async (
+  payment: InstanceType<typeof PaymentModel>,
+  session: Awaited<ReturnType<typeof PaymentModel.startSession>>,
+) => {
+  payment.status = PaymentStatus.FAILED;
+
+  await payment.save({ session });
+};
+
 export const createOrder = async (amount: number) => {
   if (Number.isNaN(amount)) {
     throw new Error("Amount must be a valid number.");
@@ -72,41 +109,26 @@ export const verifyPaymentService = async (body: VerifyPaymentBody) => {
       generatedSignature.length !== receivedSignature.length ||
       !crypto.timingSafeEqual(generatedSignature, receivedSignature)
     ) {
-      payment.status = PaymentStatus.FAILED;
-
-      await payment.save({ session });
+      await processFailedPayment(payment, session);
 
       await session.commitTransaction();
 
-      return {
-        success: false,
-        message: "Invalid payment signature.",
-      };
+      throw new Error("Invalid payment signature.");
     }
 
-    payment.status = PaymentStatus.SUCCESS;
-    payment.razorpayPaymentId = razorpay_payment_id;
-    payment.razorpaySignature = razorpay_signature;
-
-    await payment.save({ session });
-
-    const click = await ClickModel.findOne().session(session);
-
-    if (!click) {
-      throw new Error("Click document not found.");
-    }
-
-    click.paidClicks += 1;
-
-    await click.save({ session });
+    const result = await completeSuccessfulPayment(
+      payment,
+      razorpay_payment_id,
+      razorpay_signature,
+      session,
+    );
 
     await session.commitTransaction();
 
     return {
       success: true,
       message: "Payment verified successfully.",
-      freeClicks: click.freeClicks,
-      paidClicks: click.paidClicks,
+      ...result,
     };
   } catch (error) {
     await session.abortTransaction();
