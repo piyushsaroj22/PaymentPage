@@ -1,4 +1,6 @@
 import razorpay from "./razorpay.js";
+import PaymentModel from "./payment.model.js";
+import { PaymentStatus } from "./payment.constants.js";
 
 export const createOrder = async (amount: number) => {
   if (Number.isNaN(amount)) {
@@ -12,6 +14,12 @@ export const createOrder = async (amount: number) => {
   const order = await razorpay.orders.create({
     amount: amount * 100,
     currency: "INR",
+  });
+
+  await PaymentModel.create({
+    amount,
+    status: PaymentStatus.CREATED,
+    razorpayOrderId: order.id,
   });
 
   return order;

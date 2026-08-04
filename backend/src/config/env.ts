@@ -6,7 +6,8 @@ if (
   !process.env.MONGO_URI ||
   !process.env.RAZORPAY_KEY_ID ||
   !process.env.RAZORPAY_KEY_SECRET ||
-  !process.env.RAZORPAY_WEBHOOK_SECRET
+  !process.env.RAZORPAY_WEBHOOK_SECRET ||
+  !process.env.CLIENT_URL
 ) {
   throw new Error(
     "❌ Missing required environment variables. Please check your .env file.",
@@ -19,6 +20,7 @@ const env = {
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
   RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,
+  CLIENT_URL: process.env.CLIENT_URL,
 };
 
 export default env;

@@ -1,9 +1,18 @@
 import { Schema, model } from "mongoose";
 
+import { PaymentStatus } from "./payment.constants.js";
+
 const paymentSchema = new Schema(
   {
     amount: {
       type: Number,
+      required: true,
+    },
+
+    status: {
+      type: String,
+      enum: Object.values(PaymentStatus),
+      default: PaymentStatus.CREATED,
       required: true,
     },
 
@@ -21,12 +30,6 @@ const paymentSchema = new Schema(
     razorpaySignature: {
       type: String,
       default: "",
-    },
-
-    status: {
-      type: String,
-      enum: ["SUCCESS"],
-      default: "SUCCESS",
     },
   },
   {
