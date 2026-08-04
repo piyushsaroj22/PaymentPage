@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
-import { createOrder, verifyPaymentService } from "./payment.service.js";
 import type { VerifyPaymentBody } from "./payment.types.js";
+import {
+  createOrder,
+  verifyPaymentService,
+  getPaymentHistory,
+} from "./payment.service.js";
 
 export const createPaymentOrder = async (req: Request, res: Response) => {
   try {
@@ -36,6 +40,24 @@ export const verifyPayment = async (
     console.error(error);
 
     res.status(400).json({
+      success: false,
+      message: error instanceof Error ? error.message : "Something went wrong.",
+    });
+  }
+};
+
+export const getPayments = async (_req: Request, res: Response) => {
+  try {
+    const payments = await getPaymentHistory();
+
+    res.status(200).json({
+      success: true,
+      data: payments,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
       success: false,
       message: error instanceof Error ? error.message : "Something went wrong.",
     });
