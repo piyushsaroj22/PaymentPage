@@ -36,7 +36,7 @@ export const createOrder = async (amount: CreateOrderBody["amount"]) => {
     currency: PAYMENT_CURRENCY,
   });
 
-  const expiresAt = new Date(Date.now() + 1 * 20 * 1000); // 10 minutes
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
   await PaymentModel.create({
     amount,
