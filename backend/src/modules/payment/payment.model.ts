@@ -26,15 +26,12 @@ const paymentSchema = new Schema(
 
     razorpayPaymentId: {
       type: String,
-      default: "",
       unique: true,
       sparse: true,
-      index: true,
     },
 
     razorpaySignature: {
       type: String,
-      default: "",
     },
   },
   {

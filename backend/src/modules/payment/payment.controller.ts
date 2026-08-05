@@ -25,6 +25,8 @@ export const createPaymentOrder = async (req: Request, res: Response) => {
       data: order,
     });
   } catch (error) {
+    console.error(error);
+
     return res.status(400).json({
       success: false,
       message: error instanceof Error ? error.message : "Something went wrong.",

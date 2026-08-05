@@ -41,17 +41,24 @@ export interface PaymentHistoryResponse {
   data: PaymentHistoryItem[];
 }
 
-// in 2 interfaces ko old paymentTypes.ts se paste kiya hu
-
-export interface PaymentState {
-  isModalOpen: boolean;
-  amount: string;
-  isLoading: boolean;
-  error: string | null;
+export interface RazorpaySuccessResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
 }
 
-export interface CreateOrderResponse {
-  id: string;
+export interface RazorpayCheckoutOptions {
+  key: string;
   amount: number;
   currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpaySuccessResponse) => void;
+  modal?: {
+    ondismiss?: () => void;
+  };
+  theme?: {
+    color: string;
+  };
 }
