@@ -95,7 +95,7 @@ const PaymentHistoryTable = ({ payments }: PaymentHistoryTableProps) => {
   ).length;
 
   const pendingCount = payments.filter(
-    (p) => p.status.toLowerCase() === "created",
+    (p) => p.status.toLowerCase() === "pending", // TODO
   ).length;
 
   const failedCount = payments.filter(

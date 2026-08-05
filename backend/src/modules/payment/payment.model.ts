@@ -12,7 +12,7 @@ const paymentSchema = new Schema(
     status: {
       type: String,
       enum: Object.values(PaymentStatus),
-      default: PaymentStatus.CREATED,
+      default: PaymentStatus.PENDING,
       required: true,
       index: true,
     },
@@ -32,6 +32,12 @@ const paymentSchema = new Schema(
 
     razorpaySignature: {
       type: String,
+    },
+
+    expiresAt: {
+      type: Date,
+      required: true,
+      index: true,
     },
   },
   {

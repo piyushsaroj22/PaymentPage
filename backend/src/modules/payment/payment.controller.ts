@@ -1,6 +1,7 @@
-import crypto from "crypto";
+import { cleanupExpiredPayments } from "./payment.cleanup.js";
 import type { Request, Response } from "express";
 import env from "../../config/env.js";
+import crypto from "crypto";
 
 import type {
   RazorpayWebhookPayload,
@@ -109,6 +110,22 @@ export const getPayments = async (_req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
 
+    return res.status(500).json({
+      success: false,
+      message: error instanceof Error ? error.message : "Something went wrong.",
+    });
+  }
+};
+
+export const cleanupPayments = async (_req: Request, res: Response) => {
+  try {
+    const result = await cleanupExpiredPayments();
+
+    return res.status(200).json({
+      success: true,
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (error) {
     return res.status(500).json({
       success: false,
       message: error instanceof Error ? error.message : "Something went wrong.",

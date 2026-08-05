@@ -36,10 +36,13 @@ export const createOrder = async (amount: CreateOrderBody["amount"]) => {
     currency: PAYMENT_CURRENCY,
   });
 
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
   await PaymentModel.create({
     amount,
-    status: PaymentStatus.CREATED,
+    status: PaymentStatus.PENDING,
     razorpayOrderId: order.id,
+    expiresAt,
   });
 
   return order;
@@ -69,7 +72,7 @@ const markPaymentAsSuccess = async (
   const payment = await PaymentModel.findOneAndUpdate(
     {
       razorpayOrderId,
-      status: PaymentStatus.CREATED,
+      status: PaymentStatus.PENDING,
     },
     {
       $set: update,
@@ -130,7 +133,7 @@ const markPaymentAsFailed = async (
   return PaymentModel.findOneAndUpdate(
     {
       razorpayOrderId,
-      status: PaymentStatus.CREATED,
+      status: PaymentStatus.PENDING,
     },
     {
       $set: {

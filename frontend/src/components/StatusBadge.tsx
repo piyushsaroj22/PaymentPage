@@ -15,12 +15,12 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
       classes += " bg-red-100 text-red-700";
       break;
 
-    case "CREATED":
-      classes += " bg-yellow-100 text-yellow-700";
-      break;
+    // case "CREATED":
+    //   classes += " bg-yellow-100 text-yellow-700";
+    //   break; // TODO
 
     case "PENDING":
-      classes += " bg-blue-100 text-blue-700";
+      classes += " bg-yellow-100 text-yellow-700 animate-pulse";
       break;
 
     default:
