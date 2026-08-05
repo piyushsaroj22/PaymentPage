@@ -5,6 +5,7 @@ import AmountModal from "../components/AmountModal";
 import ButtonCard from "../components/ButtonCard";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import TimePass from "../components/timePass";
 
 import {
   createPaymentOrder,
@@ -87,13 +88,6 @@ const HomePage = () => {
     }
   };
 
-  {
-    /* ============================================================================================================================ */
-  }
-
-  {
-    /* =============================================================================== */
-  }
   return (
     <>
       <Navbar
@@ -101,6 +95,12 @@ const HomePage = () => {
         buttonText="Payment History"
         buttonLink="/history"
       />
+
+      {/* ============================================================================================================================ */}
+
+      <TimePass />
+
+      {/* =============================================================================== */}
 
       <main className="mx-auto max-w-[1400px] px-6 py-12">
         <div className="mb-10 grid gap-6 md:grid-cols-3">
