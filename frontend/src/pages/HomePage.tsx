@@ -87,16 +87,49 @@ const HomePage = () => {
     }
   };
 
+  {
+    /* ============================================================================================================================ */
+  }
+
+  {
+    /* =============================================================================== */
+  }
   return (
     <>
-      <Navbar />
+      <Navbar
+        title="Web Service"
+        buttonText="Payment History"
+        buttonLink="/history"
+      />
 
-      {/* ============================================================================================================================ */}
+      <main className="mx-auto max-w-[1400px] px-6 py-12">
+        <div className="mb-10 grid gap-6 md:grid-cols-3">
+          <div className="rounded-3xl border border-blue-100 bg-blue-50 p-6">
+            <p className="text-sm font-semibold text-blue-600">Total Clicks</p>
 
-      {/* =============================================================================== */}
+            <h2 className="mt-3 text-4xl font-bold text-blue-900">
+              {freeClicks + paidClicks}
+            </h2>
+          </div>
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
-        <div className="grid gap-8 md:grid-cols-2">
+          <div className="rounded-3xl border border-green-100 bg-green-50 p-6">
+            <p className="text-sm font-semibold text-green-600">Free Clicks</p>
+
+            <h2 className="mt-3 text-4xl font-bold text-green-800">
+              {freeClicks}
+            </h2>
+          </div>
+
+          <div className="rounded-3xl border border-purple-100 bg-purple-50 p-6">
+            <p className="text-sm font-semibold text-purple-600">Paid Clicks</p>
+
+            <h2 className="mt-3 text-4xl font-bold text-purple-800">
+              {paidClicks}
+            </h2>
+          </div>
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-2">
           <ButtonCard
             title="FREE"
             count={freeClicks}
@@ -114,18 +147,19 @@ const HomePage = () => {
           />
         </div>
       </main>
+
       <AmountModal
         isOpen={isAmountModalOpen}
         amount={amount}
         loading={loading}
+        error={amountError}
         onAmountChange={setAmount}
+        onConfirm={handlePaidClick}
         onClose={() => {
           setAmount("");
           setAmountError("");
           setIsAmountModalOpen(false);
         }}
-        onConfirm={handlePaidClick}
-        error={amountError}
       />
     </>
   );

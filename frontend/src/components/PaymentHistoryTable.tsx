@@ -14,22 +14,76 @@ const PaymentHistoryTable = ({ payments }: PaymentHistoryTableProps) => {
 
   const filteredPayments = useMemo(() => {
     return payments.filter((payment) => {
-      const value = search.toLowerCase().trim();
+      const query = search.toLowerCase().trim();
+
+      if (!query) return true;
 
       const date = new Date(payment.createdAt);
 
-      const dateString = date.toLocaleDateString().toLowerCase();
-      const timeString = date.toLocaleTimeString().toLowerCase();
-      const fullDateTime = date.toLocaleString().toLowerCase();
+      const dateString = date.toLocaleDateString("en-IN");
+      const timeString = date.toLocaleTimeString("en-IN", {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+
+      const fullDateTime = date.toLocaleString("en-IN");
+
+      const monthShort = date.toLocaleString("en-US", {
+        month: "short",
+      });
+
+      const monthLong = date.toLocaleString("en-US", {
+        month: "long",
+      });
+
+      const year = date.getFullYear().toString();
+
+      const day = date.getDate().toString();
+
+      const today = new Date();
+
+      const yesterday = new Date();
+      yesterday.setDate(today.getDate() - 1);
+
+      const isSameDate = (a: Date, b: Date) =>
+        a.getDate() === b.getDate() &&
+        a.getMonth() === b.getMonth() &&
+        a.getFullYear() === b.getFullYear();
+
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - today.getDay());
+
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+      const isThisWeek = date >= startOfWeek && date <= endOfWeek;
+
+      const isThisMonth =
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
+
+      if (query === "today") return isSameDate(date, today);
+
+      if (query === "yesterday") return isSameDate(date, yesterday);
+
+      if (query === "this week") return isThisWeek;
+
+      if (query === "this month") return isThisMonth;
 
       return (
-        payment.razorpayOrderId.toLowerCase().includes(value) ||
-        (payment.razorpayPaymentId || "").toLowerCase().includes(value) ||
-        payment.status.toLowerCase().includes(value) ||
-        payment.amount.toString().includes(value) ||
-        dateString.includes(value) ||
-        timeString.includes(value) ||
-        fullDateTime.includes(value)
+        payment.razorpayOrderId.toLowerCase().includes(query) ||
+        (payment.razorpayPaymentId || "").toLowerCase().includes(query) ||
+        payment.status.toLowerCase().includes(query) ||
+        payment.amount.toString().includes(query) ||
+        dateString.toLowerCase().includes(query) ||
+        timeString.toLowerCase().includes(query) ||
+        fullDateTime.toLowerCase().includes(query) ||
+        monthShort.toLowerCase().includes(query) ||
+        monthLong.toLowerCase().includes(query) ||
+        year.includes(query) ||
+        `${day} ${monthShort}`.toLowerCase().includes(query) ||
+        `${day} ${monthLong}`.toLowerCase().includes(query) ||
+        `${day} ${monthLong} ${year}`.toLowerCase().includes(query)
       );
     });
   }, [payments, search]);
@@ -126,7 +180,7 @@ const PaymentHistoryTable = ({ payments }: PaymentHistoryTableProps) => {
 
           <input
             type="text"
-            placeholder="Search Order ID / Payment ID"
+            placeholder="Search by Order ID, Payment ID, Status, Amount, Date, Time..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-xl border border-gray-300 py-3 pl-11 pr-4 outline-none transition focus:border-black"

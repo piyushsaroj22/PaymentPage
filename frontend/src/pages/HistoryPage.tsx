@@ -19,7 +19,7 @@ const HistoryPage = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar title="Web Service" buttonText="Home Page" buttonLink="/" />
 
       <main className="mx-auto max-w-7xl px-6 py-12">
         <h1 className="mb-8 text-3xl font-bold">Payment History</h1>
