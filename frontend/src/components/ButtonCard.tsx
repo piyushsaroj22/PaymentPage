@@ -24,7 +24,7 @@ const ButtonCard = ({
 
       <button
         onClick={onClick}
-        className={`mt-8 w-full rounded-xl py-3 text-lg font-semibold text-white transition ${buttonColor}`}
+        className={`mt-8 cursor-pointer w-full rounded-xl py-3 text-lg font-semibold text-white transition ${buttonColor}`}
       >
         {buttonText}
       </button>
