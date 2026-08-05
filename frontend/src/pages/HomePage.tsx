@@ -1,14 +1,14 @@
 import Navbar from "../components/Navbar";
 import ButtonCard from "../components/ButtonCard";
 
-import { useAppSelector } from "../app/hooks";
+import { useAppSelector } from "../store/hooks";
 
 import { useEffect } from "react";
 
-import { useAppDispatch } from "../app/hooks";
-import { setClicks } from "../features/click/clickSlice";
+import { useAppDispatch } from "../store/hooks";
+import { setClicks } from "../features/click/click.slice";
 
-import { freeClick, getClicks } from "../services/click.service";
+import { freeClick, getClicks } from "../api/click.api";
 
 const HomePage = () => {
   const { freeClicks, paidClicks } = useAppSelector((state) => state.click);

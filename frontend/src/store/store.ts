@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import clickReducer from "../features/click/clickSlice";
-import paymentReducer from "../features/payment/paymentSlice";
+import clickReducer from "../features/click/click.slice";
+import paymentReducer from "../features/payment/payment.slice";
 
 export const store = configureStore({
   reducer: {
