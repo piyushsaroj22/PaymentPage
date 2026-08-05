@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import {
-  cleanupPayments,
+  // cleanupPayments,
   createPaymentOrder,
   getPayments,
   paymentWebhook,
@@ -14,6 +14,6 @@ router.post("/create-order", createPaymentOrder);
 router.post("/verify", verifyPayment);
 router.post("/webhook", paymentWebhook);
 router.get("/history", getPayments);
-router.post("/cleanup", cleanupPayments);
+// router.post("/cleanup", cleanupPayments);
 
 export default router;

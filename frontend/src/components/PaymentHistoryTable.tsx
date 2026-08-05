@@ -88,7 +88,9 @@ const PaymentHistoryTable = ({ payments }: PaymentHistoryTableProps) => {
     });
   }, [payments, search]);
 
-  const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0);
+  const totalAmount = payments
+    .filter((payment) => payment.status.toLowerCase() === "success")
+    .reduce((sum, payment) => sum + payment.amount, 0);
 
   const successCount = payments.filter(
     (p) => p.status.toLowerCase() === "success",
@@ -156,7 +158,9 @@ const PaymentHistoryTable = ({ payments }: PaymentHistoryTableProps) => {
         </div>
 
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 shadow-sm transition hover:shadow-md">
-          <p className="text-sm font-medium text-blue-700">Total Amount</p>
+          <p className="text-sm font-medium text-blue-700">
+            Total Amount Received
+          </p>
 
           <h2 className="mt-2 text-3xl font-bold text-blue-700">
             ₹{totalAmount}
