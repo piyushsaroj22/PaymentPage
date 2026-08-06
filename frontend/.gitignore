@@ -24,3 +24,16 @@ dist-ssr
 *.sw?
 .env
 nots.txt
+
+# <==Time pass wala hai==>
+
+# in components
+# Footer.tsx
+# LegalPage.tsx
+
+# in page
+# AboutPage.tsx
+# ContactPage.tsx
+# PrivatePolicyPage.tsx
+# RefundPolicyPage.tsx
+# TermsPage.tsx
