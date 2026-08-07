@@ -45,6 +45,8 @@ export const createOrder = async (amount: CreateOrderBody["amount"]) => {
     expiresAt,
   });
 
+  // console.log("Key:", env.RAZORPAY_KEY_ID); // todo baad me remove karna hai
+
   return order;
 };
 

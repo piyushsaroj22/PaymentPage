@@ -3,10 +3,10 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { openRazorpayCheckout } from "../utils/razorpay";
 import AmountModal from "../components/AmountModal";
 import ButtonCard from "../components/ButtonCard";
-import TimePass from "../components/timePass";
+// import TimePass from "../components/timePass";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+// import Footer from "../components/Footer";
 
 import {
   createPaymentOrder,
@@ -15,11 +15,11 @@ import {
 
 import {
   fetchClicks,
-  // incrementFreeClickThunk,
+  incrementFreeClickThunk,
 } from "../features/click/click.thunks";
 
 const HomePage = () => {
-  const {  paidClicks, loading } = useAppSelector(
+  const { freeClicks, paidClicks, loading } = useAppSelector(
     (state) => state.click,
   ); // TODO isme baad me freeClicks add karna hai
 
@@ -35,9 +35,9 @@ const HomePage = () => {
     dispatch(fetchClicks());
   }, [dispatch]);
 
-  // const handleFreeClick = async () => {
-  //   await dispatch(incrementFreeClickThunk()).unwrap();
-  // }; TODO isko baad me enabel akrna hai
+  const handleFreeClick = async () => {
+    await dispatch(incrementFreeClickThunk()).unwrap();
+  }; // TODO isko baad me enabel akrna hai
 
   const handlePaidClick = async () => {
     const value = Number(amount);
@@ -97,12 +97,12 @@ const HomePage = () => {
 
       {/* ============================================================================================================================ */}
 
-      <TimePass />
+      {/* <TimePass /> */}
 
       {/* =============================================================================== */}
 
       <main className="mx-auto max-w-[1400px] px-6 py-12">
-        {/* <div className="mb-10 grid gap-6 md:grid-cols-3">
+        <div className="mb-10 grid gap-6 md:grid-cols-3">
           <div className="rounded-3xl border border-blue-100 bg-blue-50 p-6">
             <p className="text-sm font-semibold text-blue-600">Total Clicks</p>
 
@@ -126,32 +126,31 @@ const HomePage = () => {
               {paidClicks}
             </h2>
           </div>
-        </div> */}
+        </div>
 
         {/* TODO isko baad me enabal akrna hai */}
 
-        <div className="grid gap-8 lg:grid-cols-1"> {/* TODO isko baad me 2 karna hai */}
-          {/* <ButtonCard
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* TODO isko baad me 2 karna hai */}
+          <ButtonCard
             title="FREE"
             count={freeClicks}
             buttonText="FREE CLICK"
             buttonColor="bg-green-600 hover:bg-green-700"
             onClick={handleFreeClick}
-          /> */}
-
+          />
           {/* TODO isko baad me enabal akrna hai */}
-
           <ButtonCard
             title="PAID"
             count={paidClicks}
-            buttonText="CLICK TO PAY"
+            buttonText="PAY & CLICK"
             buttonColor="bg-blue-600 hover:bg-blue-700"
             onClick={() => setIsAmountModalOpen(true)}
           />
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
 
       <AmountModal
         isOpen={isAmountModalOpen}
